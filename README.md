@@ -1,1 +1,1 @@
-# dm_device_code
+# dm_core
