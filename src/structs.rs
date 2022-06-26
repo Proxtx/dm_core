@@ -3,14 +3,13 @@ use std::boxed::Box;
 
 pub trait Connection<'a> {
   //fn new () -> Self;
-  fn is_open (self) -> bool;
-  fn communication_method (self) -> dyn CommunicationMethod<'a>;
+  fn is_open (&self) -> bool;
 }
 
 
 pub trait CommunicationMethod <'a> {
   fn name (&self) -> &str;
-  fn connect (&self) -> dyn Connection;
+  fn connect (&self) -> Box<dyn Connection>;
   fn set_core (&mut self, core: DeviceCore<'a>);
 }
 
@@ -32,7 +31,7 @@ impl <'a> DeviceCore <'a> {
 
 struct Test <'a> {
   communication_name: String,
-  device_core: DeviceCore<'a>
+  device_core: Option<DeviceCore<'a>>
 }
 
 impl<'a> CommunicationMethod<'a> for Test<'a> {
@@ -40,11 +39,13 @@ impl<'a> CommunicationMethod<'a> for Test<'a> {
     &self.communication_name
   }
   fn set_core(&mut self, core: DeviceCore<'a>) {
-    self.device_core = core;
+    self.device_core = Option::from(core);
   }
 
-  fn connect (&self) -> TestConnection {
+  fn connect (&self) -> Box<dyn Connection<'_>> {
+    Box::from(TestConnection {
 
+    })
   }
 }
 
@@ -52,5 +53,7 @@ struct TestConnection {
 }
 
 impl <'a> Connection<'a> for TestConnection {
-
+  fn is_open (&self) -> bool {
+    true
+  }
 }
