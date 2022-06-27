@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::boxed::Box;
 
-enum ConnectionErrors {
+pub enum ConnectionErrors {
   MethodNotFound,
   DeviceNotFound,
   NoResponse
