@@ -7,6 +7,11 @@ pub enum ConnectionErrors {
   NoResponse
 }
 
+struct Subscription <'a> {
+  listening: Box<dyn Connection<'a>>,
+  sending: Box<dyn Connection<'a>>
+}
+
 pub trait Connection<'a> {
   fn is_open (&self) -> bool;
   fn send (&self, data: &str);
@@ -21,7 +26,8 @@ pub trait CommunicationMethod <'a> {
 }
 
 pub struct DeviceCore<'a> {
-  connections: Vec<Box<dyn Connection<'a>>>,
+  //connections: Vec<Box<dyn Connection<'a>>>,
+  subscribed_connections: Vec<Box<Subscription<'a>>>, 
   communication_methods:  HashMap<Box<&'a str>, Box<&'a dyn CommunicationMethod<'a>>>
 }
 
@@ -31,8 +37,12 @@ impl <'a> DeviceCore <'a> {
     self
   }
 
-  pub fn receive (&self, data: &str) {
+  pub fn receive (&self, id: Box<dyn Connection>, data: &str) {
+  
+  }
 
+  pub fn subscribe (&self, own_id: Box<dyn Connection>, connection_id: Box<dyn Connection>) {
+    
   }
 
   pub fn connect_to (&mut self, method_name: &str, id: &str) -> Result<Box<dyn Connection>, ConnectionErrors> {
