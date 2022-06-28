@@ -21,7 +21,7 @@ pub trait Connection<'a> {
 pub trait CommunicationMethod <'a> {
   fn name (&self) -> &str;
   fn connect (&self, id: &str) -> Result<Box<dyn Connection>, ConnectionErrors>;
-  fn set_core (&mut self, core: DeviceCore<'a>);
+  fn set_core (&mut self, core: &DeviceCore<'a>);
   fn discover (&self) -> Vec<&str>;
 }
 
@@ -33,6 +33,7 @@ pub struct DeviceCore<'a> {
 
 impl <'a> DeviceCore <'a> {
   pub fn add_communication_method (&mut self, method: Box<&'a dyn CommunicationMethod<'a>>) -> &mut Self {
+    method.set_core(self);
     self.communication_methods.insert(Box::from(method.name()), method);
     self
   }
@@ -58,14 +59,14 @@ impl <'a> DeviceCore <'a> {
 
 struct Test <'a> {
   communication_name: String,
-  device_core: Option<DeviceCore<'a>>
+  device_core: Option<&'a DeviceCore<'a>>
 }
 
 impl<'a> CommunicationMethod<'a> for Test<'a> {
   fn name (&self) -> &str {
     &self.communication_name
   }
-  fn set_core(&mut self, core: DeviceCore<'a>) {
+  fn set_core(&mut self, core: &DeviceCore<'a>) {
     self.device_core = Option::from(core);
   }
 
